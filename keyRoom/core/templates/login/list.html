@@ -3,6 +3,15 @@
 
 {% block content %}
 <div class="container-fluid py-4">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert bg-dark border-secondary text-light {{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
     <div class="row">
         <!-- Painel esquerdo: lista de credenciais -->
         <div class="col-md-4 col-lg-3 border-end border-secondary" style="height: 80vh; overflow-y: auto;">
@@ -23,7 +32,7 @@
                 {% endfor %}
             </div>
 
-            <a href="{% url 'add_credendial' %}" class="btn btn-success w-100 mt-3">
+            <a href="{% url 'add_credential' %}" class="btn btn-success w-100 mt-3">
                 <i class="fas fa-plus"></i> Adicionar
             </a>
         </div>
