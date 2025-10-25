@@ -11,6 +11,8 @@
                 bg-danger text-light
             {% elif 'success' in message.tags %}
                 bg-success text-light
+            {% elif 'warning' in message.tags %}
+                bg-warning text-dark
             {% else %}
                 bg-dark text-light
             {% endif %}

@@ -78,17 +78,9 @@ def delete_credential(request,id):
         credential.delete()
         messages.success(request, 'Credencial removida com sucesso!')
         return redirect('main_page')
+    else:
+        messages.error(request, 'Erro ao remover credencial.')
+        return redirect('main_page')
 
 
-@login_required
-@transaction.atomic
-def remover_disciplina(request, id):
-    # Busca a disciplina pelo id e usuário logado
-    disciplina = get_object_or_404(Disciplina, id=id, user=request.user)
-
-    if request.method == 'POST':
-        # Remove a disciplina
-        disciplina.delete()
-        messages.success(request, 'Disciplina removida com sucesso!')
-        return redirect('listar_disciplinas')
 
