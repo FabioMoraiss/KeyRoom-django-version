@@ -43,3 +43,30 @@ def register_credential(request):
             })
     else:
         return redirect('add_credential')
+
+
+@login_required(login_url='home_page')
+def edit_credential(request,id):
+    credential = get_object_or_404(Credential, id=id, user=request.user)
+    form = CredentialForm(instance=credential)
+    return render(request, 'login/edit.html', {
+        'form': form,
+        'credential': credential
+    })
+
+def update_credential(request,id):
+    credential = get_object_or_404(Credential, id=id, user=request.user)
+    if request.method == 'POST':
+        form = CredentialForm(request.POST, instance=credential)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Credencial atualizada com sucesso!')
+            return redirect('main_page')
+        else:
+            messages.error(request, 'Erro ao atualizar credencial.')
+            return render(request, 'login/edit.html', {
+                'form': form,
+                'credential': credential
+            })
+    else:
+        return redirect('edit_credential', id=id)
