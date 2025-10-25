@@ -70,3 +70,25 @@ def update_credential(request,id):
             })
     else:
         return redirect('edit_credential', id=id)
+
+
+def delete_credential(request,id):
+    credential = get_object_or_404(Credential, id=id, user=request.user)
+    if request.method == 'POST':
+        credential.delete()
+        messages.success(request, 'Credencial removida com sucesso!')
+        return redirect('main_page')
+
+
+@login_required
+@transaction.atomic
+def remover_disciplina(request, id):
+    # Busca a disciplina pelo id e usuário logado
+    disciplina = get_object_or_404(Disciplina, id=id, user=request.user)
+
+    if request.method == 'POST':
+        # Remove a disciplina
+        disciplina.delete()
+        messages.success(request, 'Disciplina removida com sucesso!')
+        return redirect('listar_disciplinas')
+
