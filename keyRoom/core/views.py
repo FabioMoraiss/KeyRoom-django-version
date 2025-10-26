@@ -111,6 +111,12 @@ def get_otp(request, credential_id):
             'otp_code': code
         })
     except Exception as e:
+        if e.args[0] == "Non-base32 digit found":
+            return JsonResponse({
+                'success': False,
+                'error': 'Chave OTP inválida.'
+            }, status=400)
+
         return JsonResponse({
             'success': False,
             'error': f'Erro ao gerar OTP: {str(e)}'
