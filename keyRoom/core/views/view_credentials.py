@@ -5,9 +5,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from core.models import Credential
+from django.views.decorators.http import require_POST
 import pyotp
-
 from core.models import *
 from core.forms import *
 
@@ -22,7 +21,7 @@ def main_page(request):
 
 @login_required(login_url='home_page')
 def add_credential(request):
-    form = CredentialForm()
+    form = CredentialForm(user=request.user)
     return render(request, 'credential/add.html', {
         'form': form
     })
@@ -32,7 +31,7 @@ def add_credential(request):
 @transaction.atomic
 def register_credential(request):
     if request.method == 'POST':
-        form = CredentialForm(request.POST)
+        form = CredentialForm(request.POST, user=request.user)
         if form.is_valid():
             credential = form.save(commit=False)
             credential.user = request.user
@@ -52,7 +51,7 @@ def register_credential(request):
 @login_required(login_url='home_page')
 def edit_credential(request,id):
     credential = get_object_or_404(Credential, id=id, user=request.user)
-    form = CredentialForm(instance=credential)
+    form = CredentialForm(instance=credential, user=request.user)
     return render(request, 'credential/edit.html', {
         'form': form,
         'credential': credential
