@@ -57,6 +57,7 @@ def edit_credential(request,id):
         'credential': credential
     })
 
+@login_required(login_url='home_page')
 def update_credential(request,id):
     credential = get_object_or_404(Credential, id=id, user=request.user)
     if request.method == 'POST':
@@ -74,7 +75,7 @@ def update_credential(request,id):
     else:
         return redirect('edit_credential', id=id)
 
-
+@login_required(login_url='home_page')
 def delete_credential(request,id):
     credential = get_object_or_404(Credential, id=id, user=request.user)
     if request.method == 'POST':
