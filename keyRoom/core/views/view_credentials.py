@@ -1,12 +1,16 @@
+# python
+import hashlib
+from collections import defaultdict
+
+import requests
+import pyotp
+
 from django.db import transaction
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-import pyotp
+
 from core.models import *
 from core.forms import *
 
@@ -123,4 +127,48 @@ def get_otp(request, credential_id):
         }, status=500)
 
 
+@login_required(login_url='home_page')
+def pwned_credentials_view(request):
+    credentials = Credential.objects.filter(user=request.user)
+
+    # Build mapping prefix -> { suffix -> [credential, ...] }
+    prefix_map = defaultdict(lambda: defaultdict(list))
+    for cred in credentials:
+        # adapt to your model field names (try common ones)
+        pwd = getattr(cred, 'password', None) or getattr(cred, 'secret', None) or getattr(cred, 'login_password', None)
+        if not pwd:
+            continue
+        sha1 = hashlib.sha1(pwd.encode('utf-8')).hexdigest().upper()
+        prefix = sha1[:5]
+        suffix = sha1[5:]
+        prefix_map[prefix][suffix].append(cred)
+
+    pwned = []
+    session = requests.Session()
+    session.headers.update({'User-Agent': 'keyRoom-App'})
+
+    for prefix, suffixes in prefix_map.items():
+        try:
+            resp = session.get(f'https://api.pwnedpasswords.com/range/{prefix}', timeout=5)
+            if resp.status_code != 200:
+                continue
+            lines = resp.text.splitlines()
+            # build a set of returned suffixes for quick lookup (left side of ":" in API response)
+            returned_suffixes = {line.split(':', 1)[0].strip().upper() for line in lines if line}
+            for suffix, creds in suffixes.items():
+                if suffix.upper() in returned_suffixes:
+                    pwned.extend(creds)
+        except requests.RequestException:
+            # network error / timeout: skip this prefix
+            continue
+
+    # Optionally add a message about results
+    if pwned:
+        messages.warning(request, f'{len(pwned)} credenciais tiveram suas senhas vazadas na internet.')
+    else:
+        messages.success(request, 'Nenhuma senha de credencial foi vazada na internet.')
+
+    return render(request, 'credential/list.html', {
+        'logins': pwned
+    })
 

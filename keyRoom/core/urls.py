@@ -11,6 +11,7 @@ path('credentials/edit/<int:id>/', view_credentials.edit_credential, name='edit_
 path('credentials/update/<int:id>/', view_credentials.update_credential, name='update_credential'),
 path('credentials/delete/<int:id>/', view_credentials.delete_credential, name='delete_credential'),
 path('credentials/<int:credential_id>/otp/', view_credentials.get_otp, name='get_otp'),
+path('credentials/pwned/', view_credentials.pwned_credentials_view, name='pwned_credentials'),
 
 #PASSWORD GENERATOR URLS
 path('password_generator/', view_password_generator.password_generator, name='password_generator'),
