@@ -1,14 +1,20 @@
 from django.urls import path
-from . import views
+from .views import *
+from .views import view_credentials, view_password_generator
 
 urlpatterns = [
-path('credentials/', views.main_page, name='main_page'),
-path('credendials/add/', views.add_credential, name='add_credential'),
-path('credentials/register', views.register_credential, name='register_credential'),
-path('credentials/edit/<int:id>/', views.edit_credential, name='edit_credential'),
-path('credentials/update/<int:id>/', views.update_credential, name='update_credential'),
-path('credentials/delete/<int:id>/', views.delete_credential, name='delete_credential'),
-path('credentials/<int:credential_id>/otp/', views.get_otp, name='get_otp'),
+# CREDENTIALS URLS
+path('credentials/', view_credentials.main_page, name='main_page'),
+path('credendials/add/', view_credentials.add_credential, name='add_credential'),
+path('credentials/register', view_credentials.register_credential, name='register_credential'),
+path('credentials/edit/<int:id>/', view_credentials.edit_credential, name='edit_credential'),
+path('credentials/update/<int:id>/', view_credentials.update_credential, name='update_credential'),
+path('credentials/delete/<int:id>/', view_credentials.delete_credential, name='delete_credential'),
+path('credentials/<int:credential_id>/otp/', view_credentials.get_otp, name='get_otp'),
+
+#PASSWORD GENERATOR URLS
+path('password_generator/', view_password_generator.password_generator, name='password_generator'),
+path('generate_password/', view_password_generator.generate_password, name='generate_password'),
 
 
 # path('credit_card/', views.credit_card, name='credit_card'),
