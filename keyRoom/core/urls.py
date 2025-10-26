@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import *
-from .views import view_credentials, view_password_generator
+from .views import view_credentials, view_password_generator, view_tag
 
 urlpatterns = [
 # CREDENTIALS URLS
@@ -15,6 +15,14 @@ path('credentials/<int:credential_id>/otp/', view_credentials.get_otp, name='get
 #PASSWORD GENERATOR URLS
 path('password_generator/', view_password_generator.password_generator, name='password_generator'),
 path('generate_password/', view_password_generator.generate_password, name='generate_password'),
+
+#TAGS
+path('tags/', view_tag.list_tags, name='list_tags'),
+path('tags/add/', view_tag.add_tag, name='add_tag'),
+path('tags/register/', view_tag.register_tag, name='register_tag'),
+path('tags/edit/<int:id>/', view_tag.edit_tag, name='edit_tag'),
+path('tags/update/<int:id>/', view_tag.update_tag, name='update_tag'),
+path('tags/delete/<int:id>/', view_tag.delete_tag, name='delete_tag'),
 
 
 # path('credit_card/', views.credit_card, name='credit_card'),

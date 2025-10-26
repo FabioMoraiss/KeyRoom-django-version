@@ -45,3 +45,19 @@ class CredentialForm(forms.ModelForm):
         if user:
             self.fields['tag'].queryset = CustomTag.objects.filter(user=user)
             self.fields['tag'].empty_label = "Nenhuma tag"
+
+
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = CustomTag
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nome da tag...'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(TagForm, self).__init__(*args, **kwargs)
