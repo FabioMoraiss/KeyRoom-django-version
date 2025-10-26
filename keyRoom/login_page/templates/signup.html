@@ -36,7 +36,21 @@
             <div class="card-body">
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="alert alert-danger {{ message.tags }}">{{ message }}</div>
+                        <div class="alert alert-dismissible fade show
+                    {% if 'danger' in message.tags %}
+                        bg-danger text-light
+                    {% elif 'success' in message.tags %}
+                        bg-success text-light
+                    {% elif 'warning' in message.tags %}
+                        bg-warning text-dark
+                    {% else %}
+                        bg-dark text-light
+                    {% endif %}
+                    border-secondary" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"
+                                    aria-label="Fechar"></button>
+                        </div>
                     {% endfor %}
                 {% endif %}
                 <form method="post" action="/register/">
