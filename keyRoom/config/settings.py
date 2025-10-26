@@ -27,12 +27,17 @@ SECRET_KEY = 'django-insecure-!zevq4b#h^onf&av=i7x590=q8vh^ndb##gt+&a3#k+gf9g_uy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.environ.get(
+_raw_allowed_hosts = os.environ.get(
     "DJANGO_ALLOWED_HOSTS",
     "localhost,127.0.0.1,keyroom-django.onrender.com"
-).split(",")
+)
 
-ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS.split(",") if h.strip()]
+if isinstance(_raw_allowed_hosts, str):
+    ALLOWED_HOSTS = [h.strip() for h in _raw_allowed_hosts.split(",") if h.strip()]
+elif isinstance(_raw_allowed_hosts, (list, tuple)):
+    ALLOWED_HOSTS = [str(h).strip() for h in _raw_allowed_hosts if str(h).strip()]
+else:
+    ALLOWED_HOSTS = []
 
 CSRF_TRUSTED_ORIGINS = os.environ.get(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
