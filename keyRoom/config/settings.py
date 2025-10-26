@@ -41,7 +41,7 @@ else:
 
 CSRF_TRUSTED_ORIGINS = os.environ.get(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
-    "https://keyroom-django.onrender.com"
+    "https://keyroom-django.onrender.com,https://keyroom.com.br,https://www.keyroom.com.br"
 )
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in CSRF_TRUSTED_ORIGINS.split(",") if o.strip()]
 
