@@ -1,0 +1,8 @@
+Django>=4.0
+gunicorn
+whitenoise
+dj-database-url
+psycopg2-binary
+python-dotenv
+requests==2.31.0
+pyotp==2.8.0
