@@ -3,6 +3,10 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import Credential
+import pyotp
 
 from.models import *
 from .forms import *
@@ -81,6 +85,36 @@ def delete_credential(request,id):
     else:
         messages.error(request, 'Erro ao remover credencial.')
         return redirect('main_page')
+
+
+@login_required
+def get_otp(request, credential_id):
+    try:
+        cred = Credential.objects.get(id=credential_id, user=request.user)
+    except Credential.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'Credencial não encontrada.'
+        }, status=404)
+
+    if not cred.otpCode or cred.otpCode.strip() == '':
+        return JsonResponse({
+            'success': False,
+            'error': 'Esta credencial não possui uma chave OTP configurada.'
+        }, status=400)
+
+    try:
+        totp = pyotp.TOTP(cred.otpCode)
+        code = totp.now()
+        return JsonResponse({
+            'success': True,
+            'otp_code': code
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'Erro ao gerar OTP: {str(e)}'
+        }, status=500)
 
 
 

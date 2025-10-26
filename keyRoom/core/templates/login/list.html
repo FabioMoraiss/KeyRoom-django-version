@@ -2,11 +2,11 @@
 {% block title %}Gerenciador de Senhas - KeyRoom{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
+    <div class="container-fluid py-4">
 
-   {% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-dismissible fade show
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-dismissible fade show
             {% if 'danger' in message.tags %}
                 bg-danger text-light
             {% elif 'success' in message.tags %}
@@ -17,68 +17,74 @@
                 bg-dark text-light
             {% endif %}
             border-secondary" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Fechar"></button>
-        </div>
-    {% endfor %}
-{% endif %}
-
-    <div class="row">
-        <!-- Painel esquerdo: lista de credenciais -->
-        <div class="col-md-4 col-lg-3 border-end border-secondary" style="height: 80vh; overflow-y: auto;">
-            <h5 class="text-light mb-3">Minhas Credenciais</h5>
-
-            <div class="list-group" id="credentialList">
-                {% for login in logins %}
-                <button
-                    class="list-group-item list-group-item-action bg-dark text-light border-secondary mb-1"
-                    onclick="showCredential('{{ login.id }}')">
-                    <div class="fw-bold">{{ login.title }}</div>
-                    <small class="text-secondary">{{ login.username }}</small>
-                </button>
-                {% empty %}
-                <div class="alert alert-dark border-secondary text-light">
-                    Nenhuma credencial cadastrada.
+                    {{ message }}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"
+                            aria-label="Fechar"></button>
                 </div>
-                {% endfor %}
+            {% endfor %}
+        {% endif %}
+
+        <div class="row">
+            <!-- Painel esquerdo: lista de credenciais -->
+
+            <div class="col-md-4 col-lg-3 border-end border-secondary" style="height: 80vh; overflow-y: auto;">
+                <h5 class="text-light mb-3">Minhas Credenciais</h5>
+
+                <div class="list-group" id="credentialList">
+
+                 <a href="{% url 'add_credential' %}" class="btn btn-success w-100 mt-3">
+                    <i class="fas fa-plus"></i> Adicionar
+                </a>
+                <br>
+                    {% for login in logins %}
+                        <button
+                                class="list-group-item list-group-item-action bg-dark text-light border-secondary mb-1"
+                                onclick="showCredential('{{ login.id }}')">
+                            <div class="fw-bold">{{ login.title }}</div>
+                            <small class="text-secondary">{{ login.username }}</small>
+                        </button>
+                        {% empty %}
+                        <div class="alert alert-dark border-secondary text-light">
+                            Nenhuma credencial cadastrada.
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
 
-            <a href="{% url 'add_credential' %}" class="btn btn-success w-100 mt-3">
-                <i class="fas fa-plus"></i> Adicionar
-            </a>
-        </div>
-
-        <!-- Painel direito: detalhes da credencial -->
-        <div class="col-md-8 col-lg-9" id="credentialDetail">
-            <div class="text-center text-secondary mt-5">
-                <i class="fas fa-lock fa-3x mb-3"></i>
-                <p>Selecione uma credencial para visualizar os detalhes</p>
+            <!-- Painel direito: detalhes da credencial -->
+            <div class="col-md-8 col-lg-9" id="credentialDetail">
+                <div class="text-center text-secondary mt-5">
+                    <i class="fas fa-lock fa-3x mb-3"></i>
+                    <p>Selecione uma credencial para visualizar os detalhes</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Script para alternar detalhes -->
-<script>
-    const credentials = {
-        {% for login in logins %}
-        "{{ login.id }}": {
-            title: "{{ login.title|escapejs }}",
-            username: "{{ login.username|escapejs }}",
-            password: "{{ login.password|escapejs }}",
-            url: "{{ login.url|escapejs }}",
-            otp: "{{ login.otpCode|escapejs }}",
-            notes: "{{ login.notes|linebreaksbr|escapejs }}"
-        },
-        {% endfor %}
-    };
+    <!-- Script para alternar detalhes -->
+    <script>
+        const credentials = {
+            {% for login in logins %}
+                "{{ login.id }}": {
+                    title: "{{ login.title|escapejs }}",
+                    username: "{{ login.username|escapejs }}",
+                    password: "{{ login.password|escapejs }}",
+                    url: "{{ login.url|escapejs }}",
+                    otp: "{{ login.otpCode|escapejs }}",
+                    notes: "{{ login.notes|linebreaksbr|escapejs }}"
+                },
+            {% endfor %}
+        };
 
-    function showCredential(id) {
-        const data = credentials[id];
-        if (!data) return;
+        function showCredential(id) {
+            const data = credentials[id];
+            if (!data) return;
+            const hasOTP = data.otp && data.otp.trim() !== "";
+            const hasURL = data.url && data.url.trim() !== "";
+            const hasNotes = data.notes && data.notes.trim() !== "";
 
-        const detail = document.getElementById('credentialDetail');
-        detail.innerHTML = `
+            const detail = document.getElementById('credentialDetail');
+            detail.innerHTML = `
             <div class="card bg-dark text-light border-secondary shadow-sm p-4">
                 <h4 class="card-title mb-3">${data.title}</h4>
 
@@ -100,24 +106,44 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label text-secondary">URL</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control bg-dark text-light border-secondary" value="${data.url}" readonly>
-                        <a href="${data.url}" target="_blank" class="btn btn-outline-light"><i class="fas fa-external-link-alt"></i></a>
-                    </div>
+                  <label class="form-label text-secondary">URL</label>
+                  <div class="input-group">
+                    <input type="text"
+                      class="form-control bg-dark text-light border-secondary"
+                      value="${hasURL ? data.url : ''}"
+                      placeholder="${hasURL ? '' : 'Sem URL cadastrada'}"
+                      readonly>
+                    <a href="${hasURL ? data.url : '#'}"
+                      target="_blank"
+                      class="btn btn-outline-light ${hasURL ? '' : 'disabled'}">
+                      <i class="fas fa-external-link-alt"></i>
+                    </a>
+                  </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label text-secondary">Código OTP</label>
+                    <label class="form-label text-secondary">Chave OTP</label>
                     <div class="input-group">
                         <input type="password" class="form-control bg-dark text-light border-secondary" value="${data.otp}" readonly id="otp-${id}">
                         <button class="btn btn-outline-secondary" onclick="togglePassword('otp-${id}')"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-outline-secondary" onclick="copyText('${data.otp}')"><i class="fas fa-copy"></i></button>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label text-secondary">Notas</label>
-                    <div class="p-3 bg-dark border border-secondary rounded">${data.notes || "<em>Sem notas</em>"}</div>
+                    <label class="form-label text-secondary">Código OTP Atual</label>
+                    <div class="input-group">
+                        <input type="text" id="otpCurrent-${id}" class="form-control bg-dark text-light border-secondary" readonly placeholder="${hasOTP ? 'Clique para gerar' : 'Sem chave OTP'}">
+                        <button class="btn btn-outline-success" onclick="fetchOTP(${id})" ${hasOTP ? '' : 'disabled'}><i class="fas fa-sync"></i> Gerar</button>
+                        <button class="btn btn-outline-secondary" onclick="copyOTP(${id})"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label text-secondary">Notas</label>
+                  <div class="p-3 bg-dark border border-secondary rounded">
+                    ${hasNotes ? data.notes : "<em class='text-secondary'>Sem notas</em>"}
+                  </div>
                 </div>
 
                 <div class="d-flex justify-content-end">
@@ -129,38 +155,71 @@
                 </div>
             </div>
         `;
-    }
+        }
 
-    function togglePassword(id) {
-        const input = document.getElementById(id);
-        input.type = input.type === 'password' ? 'text' : 'password';
-    }
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
 
-    function copyText(text) {
-        navigator.clipboard.writeText(text);
-        alert("Copiado!");
-    }
-</script>
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            alert("Copiado!");
+        }
 
-<!-- Modal de exclusão -->
-<div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark text-light border-secondary">
-            <form method="post" id="formExcluir">
-                {% csrf_token %}
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title">Confirmar Exclusão</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="textoConfirmacao"></p>
-                </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Excluir</button>
-                </div>
-            </form>
+        async function fetchOTP(id) {
+            const input = document.getElementById(`otpCurrent-${id}`);
+            input.value = "Gerando...";
+
+            try {
+                const response = await fetch(`/credentials/${id}/otp/`);
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    input.value = "";
+                    alert(data.error || "Erro ao gerar código OTP.");
+                    return;
+                }
+
+                input.value = data.otp_code;
+            } catch (error) {
+                console.error(error);
+                input.value = "";
+                alert("Erro de conexão com o servidor.");
+            }
+        }
+
+        function copyOTP(id) {
+            const input = document.getElementById(`otpCurrent-${id}`);
+            if (input.value) {
+                navigator.clipboard.writeText(input.value);
+                alert("Código OTP copiado!");
+            } else {
+                alert("Nenhum código OTP disponível.");
+            }
+        }
+    </script>
+
+    <!-- Modal de exclusão -->
+    <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <form method="post" id="formExcluir">
+                    {% csrf_token %}
+                    <div class="modal-header border-secondary">
+                        <h5 class="modal-title">Confirmar Exclusão</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="textoConfirmacao"></p>
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
