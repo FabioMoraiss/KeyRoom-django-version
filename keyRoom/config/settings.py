@@ -32,6 +32,14 @@ ALLOWED_HOSTS = os.environ.get(
     "localhost,127.0.0.1,keyroom-django.onrender.com"
 ).split(",")
 
+ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS.split(",") if h.strip()]
+
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    "https://keyroom-django.onrender.com"
+)
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in CSRF_TRUSTED_ORIGINS.split(",") if o.strip()]
+
 
 # Application definition
 
