@@ -5,25 +5,25 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from .models import Credential
+from core.models import Credential
 import pyotp
 
-from.models import *
-from .forms import *
+from core.models import *
+from core.forms import *
 
 # Create your views here.
 
 @login_required(login_url='home_page')
 def main_page(request):
     credentials_user = Credential.objects.filter(user=request.user)
-    return render(request, 'login/list.html', {
+    return render(request, 'credential/list.html', {
         'logins': credentials_user
     })
 
 @login_required(login_url='home_page')
 def add_credential(request):
     form = CredentialForm()
-    return render(request, 'login/add.html', {
+    return render(request, 'credential/add.html', {
         'form': form
     })
 
@@ -42,7 +42,7 @@ def register_credential(request):
             return redirect('main_page')
         else:
             messages.error(request, 'Erro ao cadastrar credencial.')
-            return render(request, 'login/add.html', {
+            return render(request, 'credential/add.html', {
                 'form': form
             })
     else:
@@ -53,7 +53,7 @@ def register_credential(request):
 def edit_credential(request,id):
     credential = get_object_or_404(Credential, id=id, user=request.user)
     form = CredentialForm(instance=credential)
-    return render(request, 'login/edit.html', {
+    return render(request, 'credential/edit.html', {
         'form': form,
         'credential': credential
     })
@@ -68,7 +68,7 @@ def update_credential(request,id):
             return redirect('main_page')
         else:
             messages.error(request, 'Erro ao atualizar credencial.')
-            return render(request, 'login/edit.html', {
+            return render(request, 'credential/edit.html', {
                 'form': form,
                 'credential': credential
             })

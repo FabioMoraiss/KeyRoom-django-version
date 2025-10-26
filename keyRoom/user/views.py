@@ -62,7 +62,7 @@ def submit_login(request):
                 messages.error(request, "Credenciais inválidas. Verifique e tente novamente.")
         else:
             messages.error(request, "Preencha todos os campos.")
-        return redirect('login_page')  # redireciona de volta para a tela de login
+        return redirect('login_page')
     else:
         messages.error(request, "Erro ao processar requisição.")
         return redirect('login_page')
