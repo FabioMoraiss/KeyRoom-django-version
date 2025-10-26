@@ -29,7 +29,7 @@ DEBUG = True
 
 _raw_allowed_hosts = os.environ.get(
     "DJANGO_ALLOWED_HOSTS",
-    "localhost,127.0.0.1,keyroom-django.onrender.com"
+    "localhost,127.0.0.1,keyroom-django.onrender.com,keyroom.com.br,www.keyroom.com.br"
 )
 
 if isinstance(_raw_allowed_hosts, str):
