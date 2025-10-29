@@ -27,7 +27,23 @@ SECRET_KEY = 'django-insecure-!zevq4b#h^onf&av=i7x590=q8vh^ndb##gt+&a3#k+gf9g_uy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+_raw_allowed_hosts = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    "localhost,127.0.0.1,keyroom-django.onrender.com,keyroom.com.br,www.keyroom.com.br"
+)
+
+if isinstance(_raw_allowed_hosts, str):
+    ALLOWED_HOSTS = [h.strip() for h in _raw_allowed_hosts.split(",") if h.strip()]
+elif isinstance(_raw_allowed_hosts, (list, tuple)):
+    ALLOWED_HOSTS = [str(h).strip() for h in _raw_allowed_hosts if str(h).strip()]
+else:
+    ALLOWED_HOSTS = []
+
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    "https://keyroom-django.onrender.com,https://keyroom.com.br,https://www.keyroom.com.br"
+)
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in CSRF_TRUSTED_ORIGINS.split(",") if o.strip()]
 
 
 # Application definition
