@@ -22,3 +22,8 @@ class Credential(models.Model):
 
     def __str__(self):
         return self.title
+
+class SharedCredential(models.Model):
+    credential = models.ForeignKey(Credential, on_delete=models.CASCADE, related_name='shared_with')
+    shared_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shared_credentials')
+    shared_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_credentials')
