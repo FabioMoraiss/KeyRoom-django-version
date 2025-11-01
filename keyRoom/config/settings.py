@@ -152,3 +152,6 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+
+# SUBISTINTUINDO O MODEL PADRÃO DE USUÁRIO DO DJANGO
+AUTH_USER_MODEL = 'core.CustomUser'

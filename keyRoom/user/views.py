@@ -1,6 +1,7 @@
 from django.http import HttpResponse
-from django.contrib.auth.models import User
-from django.contrib.auth import login, authenticate, logout
+from core.models import CustomUser
+from django.contrib.auth import get_user_model
+from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.shortcuts import redirect
 from django.contrib import messages
 import secrets
@@ -9,6 +10,8 @@ from django.utils.text import normalize_newlines
 
 
 # Create your views here.
+
+User = get_user_model()
 
 def submit_register(request):
     if request.method == 'POST':
@@ -24,9 +27,10 @@ def submit_register(request):
             try:
                 # Cria o novo usuário
                 novo_usuario = User.objects.create_user(
-                    username=generate_username_code(email),
+                    username=email,
                     email=email,
                     password=password,
+                    uniquiCode=generate_uniqui_code(email)
                 )
 
                 # Autentica e faz login
@@ -76,7 +80,7 @@ def logout_view(request):
     messages.success(request, "Você saiu da sua conta com sucesso.")
     return redirect('home_page')
 
-def generate_username_code(email):
+def generate_uniqui_code(email):
     return email + '+' + generate_random_code()
 
 
