@@ -2,7 +2,7 @@
 {% block title %}Usuários Confiáveis - KeyRoom{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+    <div class="container py-4">
 
         {% if messages %}
             {% for message in messages %}
@@ -24,62 +24,130 @@
             {% endfor %}
         {% endif %}
 
-    <!-- Cabeçalho da página -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-light mb-0"><i class="fas fa-users"></i> Usuários Confiáveis</h2>
-        <a href="{% url 'main_page' %}" class="btn btn-outline-light">
-            <i class="fas fa-arrow-left"></i> Voltar
-        </a>
-    </div>
+        <!-- Cabeçalho da página -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-light mb-0"><i class="fas fa-users"></i> Usuários Confiáveis</h2>
+            <a href="{% url 'main_page' %}" class="btn btn-outline-light">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
 
-    <!-- Card principal -->
-    <div class="card bg-dark text-light border-secondary shadow-sm">
-        <div class="card-header border-secondary">
-            <h5 class="mb-0"><i class="fas fa-user-shield"></i> Adicionar Usuário Confiável</h5>
+        <!-- Card principal -->
+        <div class="card bg-dark text-light border-secondary shadow-sm">
+            <div class="card-header border-secondary">
+                <h5 class="mb-0"><i class="fas fa-user-shield"></i> Adicionar Usuário Confiável</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'add_trusted_user' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="trusted_code" class="form-label text-secondary">Código do Usuário</label>
+                        <input type="text" name="trusted_code" maxlength="200"
+                               class="form-control bg-dark text-light border-secondary" id="trusted_code"
+                               placeholder="Digite o código único do usuário" required>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Adicionar
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="card-body">
-            <form method="post" action="{% url 'add_trusted_user' %}">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="trusted_code" class="form-label text-secondary">Código do Usuário</label>
-                    <input type="text" name="trusted_code" maxlength="200" class="form-control bg-dark text-light border-secondary" id="trusted_code" placeholder="Digite o código único do usuário" required>
-                </div>
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-plus"></i> Adicionar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- Lista de usuários confiáveis -->
-    <div class="card bg-dark text-light border-secondary shadow-sm mt-4">
-        <div class="card-header border-secondary">
-            <h5 class="mb-0"><i class="fas fa-users"></i> Sua Lista de Usuários Confiáveis</h5>
-        </div>
-        <div class="card-body">
-            {% if trusted_users %}
-                <ul class="list-group list-group-flush">
-                    {% for user in trusted_users %}
-                        <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center">
-                            <div>
-                                <i class="fas fa-user"></i>
-                                <strong>{{ user.email }}</strong>
-                            </div>
-                            <form method="post" action="{% url 'delete_trusted_user' user.id %}" class="mb-0">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger btn-sm" title="Remover">
+        <!-- Lista de usuários confiáveis -->
+        <div class="card bg-dark text-light border-secondary shadow-sm mt-4">
+            <div class="card-header border-secondary">
+                <h5 class="mb-0"><i class="fas fa-users"></i> Sua Lista de Usuários Confiáveis</h5>
+            </div>
+            <div class="card-body">
+                {% if trusted_users %}
+                    <ul class="list-group list-group-flush">
+                        {% for user in trusted_users %}
+                            <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-user"></i>
+                                    <strong>{{ user.email }}</strong>
+                                </div>
+                                <!-- Botão que abre o modal -->
+                                <button type="button" class="btn btn-outline-danger btn-sm" title="Remover"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalExcluir"
+                                        data-user-id="{{ user.id }}"
+                                        data-user-email="{{ user.email }}">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                            </form>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <div class="text-secondary">Você ainda não possui usuários confiáveis na sua lista.</div>
-            {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="text-secondary">Você ainda não possui usuários confiáveis na sua lista.</div>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="mb-3">
+            <label class="form-label text-secondary">Seu código de usuário:</label>
+            <div class="input-group">
+                <input type="text" class="form-control bg-dark text-light border-secondary"
+                       value="{{ request.user.uniquiCode }}" readonly id="user-code">
+                <button class="btn btn-outline-secondary" type="button"
+                        onclick="copyText(this, '{{ request.user.uniquiCode }}')">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+            <small class="text-secondary">Compartilhe este código com quem você confia para ser adicionado à lista de
+                usuários confiáveis deles.</small>
         </div>
     </div>
-</div>
+
+    <!-- Modal de exclusão -->
+    <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <form method="post" id="formExcluir">
+                    {% csrf_token %}
+                    <div class="modal-header border-secondary">
+                        <h5 class="modal-title">Confirmar Exclusão</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="textoConfirmacao"></p>
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+         function copyText(button, text) {
+            navigator.clipboard.writeText(text);
+
+            // muda ícone para check temporariamente
+            button.innerHTML = '<i class="fas fa-check text-success"></i>';
+
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-copy"></i>';
+            }, 1500);
+        }
+
+        // Modal exclusão: preenche formulário e texto de confirmação dinamicamente
+        var modalExcluir = document.getElementById('modalExcluir');
+        modalExcluir.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-user-id');
+            var userEmail = button.getAttribute('data-user-email');
+            var textoConfirmacao = document.getElementById('textoConfirmacao');
+            var formExcluir = document.getElementById('formExcluir');
+
+            textoConfirmacao.textContent = 'Tem certeza que deseja remover o usuário "' + userEmail + '" da sua lista de confiáveis?';
+
+            formExcluir.action = "{% url 'delete_trusted_user' 0 %}".replace('/0/', '/' + userId + '/');
+        });
+    </script>
 {% endblock %}
