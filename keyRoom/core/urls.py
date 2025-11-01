@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import *
-from .views import view_credentials, view_password_generator, view_tag
+from .views import view_credentials, view_password_generator, view_tag, view_shared_credentials, view_trusted_users
 
 urlpatterns = [
 # CREDENTIALS URLS
@@ -24,6 +24,15 @@ path('tags/register/', view_tag.register_tag, name='register_tag'),
 path('tags/edit/<int:id>/', view_tag.edit_tag, name='edit_tag'),
 path('tags/update/<int:id>/', view_tag.update_tag, name='update_tag'),
 path('tags/delete/<int:id>/', view_tag.delete_tag, name='delete_tag'),
+
+#SHERED CREDENTIALS
+path('shared_credentials/', view_shared_credentials.list_shared_credentials, name='list_shared_credentials'),
+
+
+#TRUSTED USERS
+path('trusted_users/', view_trusted_users.list_trusted_users, name='list_trusted_users'),
+path('trusted_users/add/', view_trusted_users.add_trusted_user, name='add_trusted_user'),
+path('trusted_users/delete/<int:user_id>/', view_trusted_users.delete_trusted_user, name='delete_trusted_user'),
 
 
 # path('credit_card/', views.credit_card, name='credit_card'),
