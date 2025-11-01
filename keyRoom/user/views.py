@@ -3,6 +3,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import redirect
 from django.contrib import messages
+import secrets
+import string
+from django.utils.text import normalize_newlines
+
 
 # Create your views here.
 
@@ -20,7 +24,7 @@ def submit_register(request):
             try:
                 # Cria o novo usuário
                 novo_usuario = User.objects.create_user(
-                    username=email,
+                    username=generate_username_code(email),
                     email=email,
                     password=password,
                 )
@@ -71,3 +75,11 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Você saiu da sua conta com sucesso.")
     return redirect('home_page')
+
+def generate_username_code(email):
+    return email + '+' + generate_random_code()
+
+
+def generate_random_code(length: int = 12) -> str:
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
