@@ -32,7 +32,7 @@ path('shared_credentials/', view_shared_credentials.list_shared_credentials, nam
 #TRUSTED USERS
 path('trusted_users/', view_trusted_users.list_trusted_users, name='list_trusted_users'),
 path('trusted_users/add/', view_trusted_users.add_trusted_user, name='add_trusted_user'),
-path('trusted_users/delete/', view_trusted_users.delete_trusted_user, name='delete_trusted_user'),
+path('trusted_users/delete/<int:user_id>/', view_trusted_users.delete_trusted_user, name='delete_trusted_user'),
 
 
 # path('credit_card/', views.credit_card, name='credit_card'),
