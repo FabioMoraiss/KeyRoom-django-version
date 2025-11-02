@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Compartilhar Credencial - KeyRoom{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Cabeçalho da página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-light mb-0"><i class="fas fa-share-alt"></i> Compartilhar Credencial</h2>
+        <a href="{% url 'list_share_credentials' %}" class="btn btn-outline-light">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <!-- Card de detalhes da credencial -->
+    <div class="card bg-dark text-light border-secondary shadow-sm mb-4">
+        <div class="card-header border-secondary">
+            <h5 class="mb-0"><i class="fas fa-lock-open"></i> Detalhes da Credencial</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label text-secondary">Título</label>
+                <input type="text" class="form-control bg-dark text-light border-secondary" value="{{ credential.title }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-secondary">Login</label>
+                <input type="text" class="form-control bg-dark text-light border-secondary" value="{{ credential.username }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-secondary">Tag</label>
+                <input type="text" class="form-control bg-dark text-light border-secondary" value="{{ credential.tag.name|default_if_none:'' }}" readonly>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card de compartilhamento -->
+    <div class="card bg-dark text-light border-secondary shadow-sm mb-4">
+        <div class="card-header border-secondary">
+            <h5 class="mb-0"><i class="fas fa-user-friends"></i> Compartilhar com Usuários Confiáveis</h5>
+        </div>
+        <div class="card-body">
+            <form id="shareForm">
+                <div class="mb-3">
+                    {% for trusted in trusted_users %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   value="{{ trusted.id }}" id="trustedUser{{ trusted.id }}"
+                                   name="user_ids"
+                                   {% if trusted.id in shared_with_ids %}checked{% endif %}>
+                            <label class="form-check-label" for="trustedUser{{ trusted.id }}">
+                                {{ trusted.username }} ({{ trusted.email }})
+                            </label>
+                        </div>
+                    {% empty %}
+                        <div class="alert alert-warning">Você não possui usuários confiáveis cadastrados.</div>
+                    {% endfor %}
+                </div>
+                <div class="d-flex justify-content-end">
+                    <a href="{% url 'list_share_credentials' %}" class="btn btn-outline-light me-2">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Salvar Compartilhamento
+                    </button>
+                </div>
+            </form>
+            <div id="shareResult" class="mt-3"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('shareForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const checkboxes = document.querySelectorAll('input[name="user_ids"]:checked');
+    const user_ids = Array.from(checkboxes).map(cb => parseInt(cb.value));
+    fetch("{% url 'share_credential_page' credential.id %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ user_ids: user_ids })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('shareResult').innerHTML =
+                '<div class="alert alert-success">Compartilhamento atualizado com sucesso!</div>';
+        } else {
+            document.getElementById('shareResult').innerHTML =
+                `<div class="alert alert-danger">${data.error || "Erro ao compartilhar."}</div>`;
+        }
+    })
+    .catch(error => {
+        document.getElementById('shareResult').innerHTML =
+            `<div class="alert alert-danger">Erro de conexão.</div>`;
+    });
+});
+</script>
+{% endblock %}

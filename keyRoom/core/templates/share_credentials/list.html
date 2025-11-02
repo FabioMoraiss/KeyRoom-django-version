@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Minhas Credenciais - Compartilhamento - KeyRoom{% endblock %}
+
+{% block content %}
+    <div class="container-fluid py-4">
+
+        <div class="mb-3">
+            <input type="text"
+                   id="searchInput"
+                   class="form-control bg-dark text-light border-secondary"
+                   placeholder="Pesquisar por título, login ou tag...">
+        </div>
+
+        <div class="row">
+            <!-- Painel esquerdo: lista de credenciais -->
+            <div class="col-md-4 col-lg-3 border-end border-secondary" style="height: 80vh; overflow-y: auto;">
+                <h5 class="text-light mb-3">Minhas Credenciais</h5>
+                <div class="list-group" id="credentialList">
+                    {% for credential in credentials %}
+                        <button
+                                class="list-group-item list-group-item-action bg-dark text-light border-secondary mb-1"
+                                onclick="showCredential('{{ credential.id }}')"
+                                data-tag="{{ credential.tag.name|default_if_none:'' }}">
+                            <div class="fw-bold">{{ credential.title }}</div>
+                            <small class="text-secondary">
+                                {{ credential.username }}
+                                {% if credential.tag %} —
+                                    <span class="text-info">{{ credential.tag.name }}</span>{% endif %}
+                            </small>
+                        </button>
+                        {% empty %}
+                        <div class="alert alert-dark border-secondary text-light">
+                            Nenhuma credencial cadastrada.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Painel direito: detalhes e compartilhamento -->
+            <div class="col-md-8 col-lg-9" id="credentialDetail">
+                <div class="text-center text-secondary mt-5">
+                    <i class="fas fa-user-friends fa-3x mb-3"></i>
+                    <p>Selecione uma credencial para visualizar os detalhes e compartilhamento.</p>
+                    <p class="small">Clique em uma credencial para ver com quem ela já foi compartilhada.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados das credenciais e dos compartilhamentos
+        const credentials = {
+            {% for credential in credentials %}
+                "{{ credential.id }}": {
+                    id: "{{ credential.id }}",
+                    title: "{{ credential.title|escapejs }}",
+                    username: "{{ credential.username|escapejs }}",
+                    tag: "{{ credential.tag.name|default_if_none:''|escapejs }}",
+                    edit_url: "{% url 'edit_share_credential' credential.id %}",
+                    shared_with: [
+                        {% for shared in credential.shared_with.all %}
+                            {
+                                id: "{{ shared.shared_with.id }}",
+                                username: "{{ shared.shared_with.username|escapejs }}",
+                                email: "{{ shared.shared_with.email|escapejs }}"
+                            },
+                        {% endfor %}
+                    ]
+                },
+            {% endfor %}
+        };
+
+        function showCredential(id) {
+            const data = credentials[id];
+            if (!data) return;
+
+            const sharedUsers = data.shared_with;
+            let sharedUsersHtml = "";
+
+            if (sharedUsers.length === 0) {
+                sharedUsersHtml = "<em class='text-secondary'>Nenhum usuário confiável recebeu esta credencial ainda.</em>";
+            } else {
+                sharedUsersHtml = '<ul class="list-group list-group-flush">';
+                sharedUsers.forEach(user => {
+                    sharedUsersHtml += `
+                    <li class="list-group-item bg-dark text-light">
+                        <i class="fas fa-user"></i> ${user.email}
+                    </li>
+                `;
+                });
+                sharedUsersHtml += '</ul>';
+            }
+
+            const detail = document.getElementById('credentialDetail');
+            detail.innerHTML = `
+            <div class="card bg-dark text-light border-secondary shadow-sm p-4">
+                <h4 class="card-title mb-3">${data.title}</h4>
+                <div class="mb-3">
+                    <label class="form-label text-secondary">Login</label>
+                    <input type="text" class="form-control bg-dark text-light border-secondary" value="${data.username}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-secondary">Tag</label>
+                    <input type="text" class="form-control bg-dark text-light border-secondary" value="${data.tag}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-secondary">Compartilhada com</label>
+                    ${sharedUsersHtml}
+                </div>
+                <div class="d-flex justify-content-end">
+                    <a href="${data.edit_url}" class="btn btn-outline-light">
+                         <i class="fas fa-edit"></i> Editar compartilhamento
+                    </a>
+                </div>
+            </div>
+        `;
+        }
+
+        // Filtro em tempo real
+        document.getElementById("searchInput").addEventListener("input", function () {
+            const query = this.value.toLowerCase();
+            const items = document.querySelectorAll("#credentialList button.list-group-item");
+
+            items.forEach(btn => {
+                const title = btn.querySelector(".fw-bold").textContent.toLowerCase();
+                const username = btn.querySelector("small").textContent.toLowerCase();
+                const tag = btn.getAttribute("data-tag")?.toLowerCase() || "";
+
+                if (title.includes(query) || username.includes(query) || tag.includes(query)) {
+                    btn.style.display = "";
+                } else {
+                    btn.style.display = "none";
+                }
+            });
+        });
+    </script>
+{% endblock %}
