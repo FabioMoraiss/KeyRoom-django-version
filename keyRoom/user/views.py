@@ -1,17 +1,12 @@
-from django.http import HttpResponse
-from core.models import CustomUser
-from django.contrib.auth import get_user_model
-from django.contrib.auth import login, authenticate, logout, get_user_model
+
+from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import redirect
 from django.contrib import messages
 import secrets
 import string
-from django.utils.text import normalize_newlines
-
+from core.models import CustomUser
 
 # Create your views here.
-
-User = get_user_model()
 
 def submit_register(request):
     if request.method == 'POST':
@@ -21,12 +16,12 @@ def submit_register(request):
 
         if password and email:
             # Verifica se já existe um usuário com o mesmo e-mail
-            if User.objects.filter(username=email).exists():
+            if CustomUser.objects.filter(username=email).exists():
                 messages.error(request, "Email já cadastrado. Escolha outro ou tente fazer o login.")
                 return redirect('signup_page')
             try:
                 # Cria o novo usuário
-                novo_usuario = User.objects.create_user(
+                novo_usuario = CustomUser.objects.create_user(
                     username=email,
                     email=email,
                     password=password,
