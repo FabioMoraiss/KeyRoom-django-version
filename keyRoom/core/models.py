@@ -27,7 +27,7 @@ class Credential(models.Model):
     def __str__(self):
         return self.title
 
-class ListOfTrusedUers(models.Model):
+class ListOfTrustedUsers(models.Model):
     owner = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='trusted_list')
     trusted_users = models.ManyToManyField(CustomUser, related_name='trusted_in_list', blank=True)
 

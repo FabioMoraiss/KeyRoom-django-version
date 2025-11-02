@@ -1,12 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from ..models import CustomUser, ListOfTrusedUers
+from ..models import CustomUser, ListOfTrustedUsers
 
 @login_required(login_url='home_page')
 def list_trusted_users(request):
     # Recupera ou cria a lista de confiáveis do usuário logado
-    trusted_list, _ = ListOfTrusedUers.objects.get_or_create(owner=request.user)
+    trusted_list, _ = ListOfTrustedUsers.objects.get_or_create(owner=request.user)
     trusted_users = trusted_list.trusted_users.all()
     # Passa os usuários confiáveis para o template
     return render(request, 'trusted_list/list.html', {'trusted_users': trusted_users})
@@ -33,7 +33,7 @@ def add_trusted_user(request):
             return redirect('list_trusted_users')
 
         # Recupera ou cria a lista do usuário logado
-        trusted_list, created = ListOfTrusedUers.objects.get_or_create(owner=request.user)
+        trusted_list, created = ListOfTrustedUsers.objects.get_or_create(owner=request.user)
 
         # Verifica se já está na lista
         if trusted_list.trusted_users.filter(id=user_to_add.id).exists():
@@ -55,7 +55,7 @@ def delete_trusted_user(request, user_id):
             messages.error(request, "Usuário não encontrado.")
             return redirect('list_trusted_users')
 
-        trusted_list, _ = ListOfTrusedUers.objects.get_or_create(owner=request.user)
+        trusted_list, _ = ListOfTrustedUsers.objects.get_or_create(owner=request.user)
 
         if trusted_list.trusted_users.filter(id=user_to_remove.id).exists():
             trusted_list.trusted_users.remove(user_to_remove)
