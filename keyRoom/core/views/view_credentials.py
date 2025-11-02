@@ -91,15 +91,20 @@ def delete_credential(request,id):
         return redirect('main_page')
 
 
-@login_required
+@login_required(login_url='home_page')
 def get_otp(request, credential_id):
     try:
+        # Tenta pegar credencial do usuário logado
         cred = Credential.objects.get(id=credential_id, user=request.user)
     except Credential.DoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'error': 'Credencial não encontrada.'
-        }, status=404)
+        # Se não for dono, tenta ver se está compartilhada com ele
+        shared = SharedCredential.objects.filter(credential_id=credential_id, shared_with=request.user).first()
+        if not shared:
+            return JsonResponse({
+                'success': False,
+                'error': 'Credencial não encontrada ou não compartilhada com você.'
+            }, status=404)
+        cred = shared.credential
 
     if not cred.otpCode or cred.otpCode.strip() == '':
         return JsonResponse({
@@ -131,10 +136,8 @@ def get_otp(request, credential_id):
 def pwned_credentials_view(request):
     credentials = Credential.objects.filter(user=request.user)
 
-    # Build mapping prefix -> { suffix -> [credential, ...] }
     prefix_map = defaultdict(lambda: defaultdict(list))
     for cred in credentials:
-        # adapt to your model field names (try common ones)
         pwd = getattr(cred, 'password', None) or getattr(cred, 'secret', None) or getattr(cred, 'login_password', None)
         if not pwd:
             continue
@@ -153,16 +156,13 @@ def pwned_credentials_view(request):
             if resp.status_code != 200:
                 continue
             lines = resp.text.splitlines()
-            # build a set of returned suffixes for quick lookup (left side of ":" in API response)
             returned_suffixes = {line.split(':', 1)[0].strip().upper() for line in lines if line}
             for suffix, creds in suffixes.items():
                 if suffix.upper() in returned_suffixes:
                     pwned.extend(creds)
         except requests.RequestException:
-            # network error / timeout: skip this prefix
             continue
 
-    # Optionally add a message about results
     if pwned:
         messages.warning(request, f'{len(pwned)} credenciais tiveram suas senhas vazadas na internet.')
     else:

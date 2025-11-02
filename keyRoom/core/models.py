@@ -33,3 +33,17 @@ class ListOfTrustedUsers(models.Model):
 
     def __str__(self):
         return f"{self.owner.username}'s trusted users list"
+
+
+class SharedCredential(models.Model):
+    credential = models.ForeignKey(Credential, on_delete=models.CASCADE, related_name='shared_with')
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='shared_credentials')
+    shared_with = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='received_credentials')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['credential', 'shared_with'], name='unique_credential_sharing')
+        ]
+
+    def __str__(self):
+        return f"{self.owner.username} shared '{self.credential.title}' with {self.shared_with.username}"
