@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from ..models import CustomUser, ListOfTrustedUsers
+from ..models import CustomUser, ListOfTrustedUsers, SharedCredential
+
 
 @login_required(login_url='home_page')
 def list_trusted_users(request):
@@ -60,9 +61,14 @@ def delete_trusted_user(request, user_id):
         if trusted_list.trusted_users.filter(id=user_to_remove.id).exists():
             trusted_list.trusted_users.remove(user_to_remove)
             messages.success(request, "Usuário removido da sua lista de confiáveis.")
+
+            # REMOVER TODOS OS COMPARTILHAMENTOS COM ESSE USUÁRIO!
+            SharedCredential.objects.filter(
+                owner=request.user,
+                shared_with=user_to_remove
+            ).delete()
         else:
             messages.warning(request, "Esse usuário não está na sua lista de confiáveis.")
 
         return redirect('list_trusted_users')
-    #else
     return redirect('list_trusted_users')
