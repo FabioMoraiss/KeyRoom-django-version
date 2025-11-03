@@ -15,33 +15,53 @@
 <div class="d-flex" id="wrapper">
     <!-- Sidebar -->
     <div class="bg-dark border-end border-secondary" id="sidebar-wrapper">
+        <!-- Título / Logo -->
         <div class="sidebar-heading text-center py-4 text-white fs-4 fw-bold border-bottom border-secondary">
             <a href="{% url 'main_page' %}" class="text-white text-decoration-none">
-                KeyRoom
+                <i class="fas fa-key me-2"></i>KeyRoom
             </a>
         </div>
-        <div class="list-group list-group-flush">
-            <a href="{% url 'main_page' %}" class="list-group-item list-group-item-action bg-dark text-light border-0">
-                <i class="fas fa-book me-2"></i>Logins
+
+        <!-- Lista de links -->
+        <div class="list-group list-group-flush mt-2">
+
+            <!-- Seção: Credenciais -->
+            <a href="{% url 'main_page' %}"
+               class="list-group-item list-group-item-action bg-dark text-light border-0 py-3">
+                <i class="fas fa-lock me-2"></i>Minhas Credenciais
             </a>
-             <a href="{% url 'password_generator' %}" class="list-group-item list-group-item-action bg-dark text-light border-0">
-                <i class="fas fa-sync me-2"></i>Gerador de senhas
+
+            <a href="{% url 'password_generator' %}"
+               class="list-group-item list-group-item-action bg-dark text-light border-0 py-3">
+                <i class="fas fa-random me-2"></i>Gerador de Senhas
             </a>
-             <a href="{% url 'list_tags' %}" class="list-group-item list-group-item-action bg-dark text-light border-0">
-                <i class="fas fa-tags me-2"></i>Tags
+
+            <a href="{% url 'list_tags' %}"
+               class="list-group-item list-group-item-action bg-dark text-light border-0 py-3">
+                <i class="fas fa-tag me-2"></i>Minhas Tags
             </a>
-            <a href="{% url 'list_trusted_users' %}" class="list-group-item list-group-item-action bg-dark text-light border-0">
-                <i class="fas fa-id-card me-2"></i>Usuarios Confiáveis
+
+            <hr class="border-secondary my-2">
+
+            <!-- Seção: Compartilhamento -->
+            <a href="{% url 'list_trusted_users' %}"
+               class="list-group-item list-group-item-action bg-dark text-light border-0 py-3">
+                <i class="fas fa-user-shield me-2"></i>Usuários Confiáveis
             </a>
-            <a href="{% url 'list_share_credentials' %}" class="list-group-item list-group-item-action bg-dark text-light border-0">
-                <i class="fas fa-id-card me-2"></i>COMPARTILHAR credenciais
+
+            <a href="{% url 'list_share_credentials' %}"
+               class="list-group-item list-group-item-action bg-dark text-light border-0 py-3">
+                <i class="fas fa-share-alt me-2"></i>Compartilhar Credenciais
             </a>
-            <a href="{% url 'list_shared_credentials' %}" class="list-group-item list-group-item-action bg-dark text-light border-0">
-                <i class="fas fa-id-card me-2"></i>credenciais que me foram compartilhadas comigo
+
+            <a href="{% url 'list_shared_credentials' %}"
+               class="list-group-item list-group-item-action bg-dark text-light border-0 py-3">
+                <i class="fas fa-users me-2"></i>Compartilhadas Comigo
             </a>
 
         </div>
     </div>
+
     <!-- /#sidebar-wrapper -->
 
     <!-- Page Content -->
@@ -52,7 +72,7 @@
                 <h5 class="ms-3 mb-0">Gerenciador de credenciais</h5>
 
 
-                 <a href="{% url 'logout' %}" class="btn btn-outline-danger ms-3">Sair</a>
+                <a href="{% url 'logout' %}" class="btn btn-outline-danger ms-3">Sair</a>
             </div>
         </nav>
 
