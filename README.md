@@ -3,7 +3,7 @@
 Bem-vindo ao **KeyRoom**, seu cofre digital feito para proteger e organizar suas credenciais e senhas de forma prática e segura!  
 Este repositório traz um protótipo do KeyRoom desenvolvido em Django, baseado nos conhecimentos adquiridos na disciplina de Projeto Web 2 no IFPR.
 
----
+
 
 ## 🚀 Como rodar o projeto
 
@@ -18,7 +18,7 @@ python manage.py runserver 8080
 
 Acesse [http://localhost:8080](http://localhost:8080) para usar o site!
 
----
+
 
 ## ✨ Funcionalidades principais
 
@@ -28,7 +28,7 @@ Acesse [http://localhost:8080](http://localhost:8080) para usar o site!
 - **Gestão de usuários confiáveis:** controle quem pode acessar informações compartilhadas.
 - **Gerenciamento de tags:** personalize e organize suas credenciais por categorias.
 
----
+
 
 ## 🗃️ Entidades
 
@@ -40,7 +40,7 @@ O sistema possui alguns dos principais models abaixo (resumidos):
 - `ListOfTrustedUsers`: Lista de usuários “confiáveis” para cada usuário do sistema.
 - `SharedCredential`: Relação de compartilhamento de credenciais entre usuários.
 
----
+
 
 ## 🌐 Principais rotas/URLs
 
@@ -55,17 +55,15 @@ O KeyRoom possui endpoints para:
 
 
 
----
 ## ⚠️ O que faltou implementar
 - Criptografar as credenciais no banco de dados.
 - Testes automatizados.
----
+
 
 ## 📚 Créditos
 
 Desenvolvido por Fabio Morais para a disciplina de Projeto Web 2 no IFPR - 2025.
 
----
 <p align="center">
   <img src="https://img.shields.io/badge/Django-4.2.13-green" alt="Django Version">
   <img src="https://img.shields.io/badge/Python-3.10+-blue" alt="Python Version">
