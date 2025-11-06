@@ -7,8 +7,6 @@ Este repositório traz um protótipo do KeyRoom desenvolvido em Django, baseado 
 
 ## 🚀 Como rodar o projeto
 
-Siga os passos abaixo para rodar localmente:
-
 ```bash
 git clone https://github.com/FabioMoraiss/KeyRoom-django-version.git
 cd KeyRoom-django-version/keyRoom
@@ -32,8 +30,6 @@ Acesse [http://localhost:8080](http://localhost:8080) para usar o site!
 
 ## 🗃️ Entidades
 
-O sistema possui alguns dos principais models abaixo (resumidos):
-
 - `CustomUser`: Extensão do usuário padrão do Django, com campo de código único.
 - `CustomTag`: Categorias personalizadas de credenciais, vinculadas ao usuário.
 - `Credential`: Onde são salvas as credenciais (título, nome de usuário, senha, URL, OTP, notas).
@@ -43,8 +39,6 @@ O sistema possui alguns dos principais models abaixo (resumidos):
 
 
 ## 🌐 Principais rotas/URLs
-
-O KeyRoom possui endpoints para:
 
 - **Autenticação:** login, cadastro e logout.
 - **Credenciais:** listar, adicionar, editar, excluir, visualizar OTP, verificação de senhas comprometidas.
