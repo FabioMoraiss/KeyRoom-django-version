@@ -48,7 +48,6 @@ Acesse [http://localhost:8080](http://localhost:8080) para usar o site!
 - **Usuários confiáveis:** gerenciar lista de pessoas confiáveis.
 
 
-
 ## ⚠️ O que faltou implementar
 - Criptografar as credenciais no banco de dados.
 - Testes automatizados.
